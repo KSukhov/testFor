@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Customers</title>
+    <script  type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(
+                function() {
+                    rebuildTable();
+                    $("#clientName,#ballance,#from,#to").bind("keyup", function() {
+                        rebuildTable();
+                    });
+                    
+                    $("#hasPhone").bind("click", function() {
+                        rebuildTable();
+                    });
+                    $(".filter").bind("change", function() {
+                        rebuildTable();
+                    });
+                }
+        );
+        function rebuildTable() {
+            var param = {
+                name : $("#clientName").val(),
+                hasPhone : $("#hasPhone:checked").length,
+                ballance : $("#ballance").val(),
+                ballmore : $("#balmore").val(),
+                begin : $("#begin").val(),
+                end : $("#end").val(),
+                from: $("#from").val(),
+                to: $("#to").val(),
+		action: 'list'
+             }
+            $.get('action.php',param, function (data) {
+                $(".data_row").remove();
+                var $main = $("#main_table");
+                $.each(data,function(){
+                     if(this.phone == null){
+                       var phone = "<input type='button' onclick =requestPone('"+this.email+"') ; class='phoneRequest' id = 't"+this.id+"' value = 'Запросить телефон'>";
+                     } else {
+                         var phone = this.phone;
+                     }
+                     var $row = $("<tr class='data_row' ><td>"+this.name+"</td><td>"+this.email+"</td><td>"+phone+"</td><td>"+this.amount+"</td></tr>");
+                     $main.append($row );
+                 });
+            } , "json"
+            );
+        }
+	function requestPone(email){
+	     $.get('action.php',{email: email, action: 'requestPhone'}, function (data) {
+	     	alert(data);
+             });
+	}
+    </script>'
+</head>
+
+<body>
+<div>
+    ФИО <input id="clientName" type = "text" class = "filter" /><br>
+    Наличие телефона <input type = "checkbox" id="hasPhone" class = "filter" /><br>
+    Баланс
+    <select id="balmore" class = "filter">
+        <option value = 1>более</option>
+        <option value = 0>менее</option>
+    </select>
+    <input type = "number" step="0.01" id ="ballance" class = "filter" ><br>
+    Зарегистрирован в период с
+    <input id="begin" type = "date" class = "filter"> по 
+    <input id="end" type = "date" class = "filter" ><br>
+    Cредний платеж от
+    <input type = "number" step="1" id="from"  class = "filter" >
+    до <input type = "number" step="1" id="to" class = "filter" ><br>
+</div>
+<table id="main_table">
+    <tr>
+        <td width = 180px >ФИО</td>
+        <td width = 180px >Email</td>
+        <td width = 180px >Телефон</td>
+        <td>Баланс</td>
+    </tr>
+    <tr>
+</table>
+</body>
+</html>
