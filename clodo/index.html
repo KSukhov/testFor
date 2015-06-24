@@ -8,10 +8,9 @@
         $(document).ready(
                 function() {
                     rebuildTable();
-                    $("#clientName,#ballance,#from,#to").bind("keyup", function() {
+                    $("#clientName,#ballance, #avgSumFrom, #avgSumTo").bind("keyup", function() {
                         rebuildTable();
-                    });
-                    
+                    })
                     $("#hasPhone").bind("click", function() {
                         rebuildTable();
                     });
@@ -20,24 +19,28 @@
                     });
                 }
         );
+        /**
+         * Строим таблицу в соответствии
+         * с выбранными значениями фильтров
+         */
         function rebuildTable() {
             var param = {
                 name : $("#clientName").val(),
                 hasPhone : $("#hasPhone:checked").length,
                 ballance : $("#ballance").val(),
                 ballmore : $("#balmore").val(),
-                begin : $("#begin").val(),
-                end : $("#end").val(),
-                from: $("#from").val(),
-                to: $("#to").val(),
-		action: 'list'
-             }
+                registerFrom : $("#registerFrom").val(),
+                registerTo : $("#registerTo").val(),
+                from: $("#avgSumFrom").val(),
+                to: $("#avgSumTo").val(),
+		        action: 'list'
+            }
             $.get('action.php',param, function (data) {
                 $(".data_row").remove();
                 var $main = $("#main_table");
                 $.each(data,function(){
                      if(this.phone == null){
-                       var phone = "<input type='button' onclick =requestPone('"+this.email+"') ; class='phoneRequest' id = 't"+this.id+"' value = 'Запросить телефон'>";
+                         var phone = "<input type='button' onclick =requestPone('"+this.email+"') ; class='phoneRequest' id = 't"+this.id+"' value = 'Запросить телефон'>";
                      } else {
                          var phone = this.phone;
                      }
@@ -47,11 +50,16 @@
             } , "json"
             );
         }
-	function requestPone(email){
-	     $.get('action.php',{email: email, action: 'requestPhone'}, function (data) {
-	     	alert(data);
-             });
-	}
+        /**
+         * Запрос телефона
+         *
+         * @param email
+         */
+	    function requestPone(email){
+            $.get('action.php',{email: email, action: 'requestPhone'}, function (data) {
+	     	    alert(data);
+            });
+	    }
     </script>'
 </head>
 
@@ -66,12 +74,13 @@
     </select>
     <input type = "number" step="0.01" id ="ballance" class = "filter" ><br>
     Зарегистрирован в период с
-    <input id="begin" type = "date" class = "filter"> по 
-    <input id="end" type = "date" class = "filter" ><br>
+    <input id="registerFrom" type = "date" class = "filter"> по
+    <input id="registerTo" type = "date" class = "filter" ><br>
     Cредний платеж от
-    <input type = "number" step="1" id="from"  class = "filter" >
-    до <input type = "number" step="1" id="to" class = "filter" ><br>
+    <input type = "number" step="1" id="avgSumFrom"  class = "filter" >
+    до <input type = "number" step="1" id="avgSumTo" class = "filter" ><br>
 </div>
+<br>
 <table id="main_table">
     <tr>
         <td width = 180px >ФИО</td>
