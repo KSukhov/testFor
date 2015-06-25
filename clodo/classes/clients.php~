@@ -14,7 +14,7 @@ class Clients {
      */
     private $db;
 
-    function __construct(PDO $db)
+    function __construct($db)
     {
        $this->db = $db;
     }
@@ -23,12 +23,12 @@ class Clients {
      * @param array $filter массив фильтров, формата фильтр => значение
      * @return array список данных по клиентам
      */
-    function getClientList(array $filter)
+    function getClientList($filter)
     {
 	$this->filter = $filter;
 	$sql = 'SELECT clients.*,  p.avg_sum FROM clients 
 		LEFT JOIN ( SELECT client_id, AVG( summ ) avg_sum
-				FROM `payments` GROUP BY client_id ) p 
+				FROM `clode`.`payments` GROUP BY client_id ) p 
 			ON id = p.client_id 
 		WHERE 1 '.$this->makePredict();
 	return $this->db->query($sql)->fetchAll();
